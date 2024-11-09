@@ -27,6 +27,7 @@ const (
 	pathTypesPayment = "/v2/references/payment/types"
 	pathLoadTypes    = "/v2/references/load/types"
 	pathAreas        = "/v2/references/areas"
+	pathContacts     = "/v2/users/user/contacts"
 )
 
 // Config contains the configuration for the API client
@@ -66,6 +67,11 @@ func NewClient(config Config) *Client {
 			Timeout: config.Timeout,
 		},
 	}
+}
+
+type ResponseContacts struct {
+	ContactID   int    `json:"contactId"`
+	ContactName string `json:"face"`
 }
 
 // Response represents a generic API response
@@ -170,6 +176,16 @@ func (c *Client) CreateCargo(ctx context.Context, req *CargoRequest) (*CargoResp
 	}
 
 	return &resp, nil
+}
+
+// GetContacts retrieves available contacts
+func (c *Client) GetContacts(ctx context.Context) ([]ResponseContacts, error) {
+	var resp []ResponseContacts
+	err := c.get(ctx, pathContacts, &resp)
+	if err != nil {
+		return nil, fmt.Errorf("get contacts failed: %w", err)
+	}
+	return resp, nil
 }
 
 // GetAreas retrieves available areas
