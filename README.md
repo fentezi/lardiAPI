@@ -13,7 +13,7 @@ go get github.com/fentezi/lardi-trans-api
 ### Инициализация клиента
 
 ```go
-import "github.com/your-username/larditrans"
+import "github.com/fentezi/lardi-trans-api"
 
 config := larditrans.Config{
     APIKey:   "ваш-api-ключ",
