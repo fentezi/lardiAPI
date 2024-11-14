@@ -147,6 +147,10 @@ type LoadParams struct {
 	Address     string  `json:"address"`
 }
 
+type Request struct {
+	Name string
+}
+
 // CargoResponse represents the response from creating a cargo proposal
 type CargoResponse struct {
 	ID int `json:"id"`
@@ -189,13 +193,21 @@ func (c *Client) GetContacts(ctx context.Context) ([]ResponseContacts, error) {
 }
 
 // GetAreas retrieves available areas
-func (c *Client) GetAreas(ctx context.Context) ([]Response, error) {
+func (c *Client) GetAreas(ctx context.Context, area Request) (*Response, error) {
 	var resp []Response
 	err := c.get(ctx, pathAreas, &resp)
 	if err != nil {
 		return nil, fmt.Errorf("get areas failed: %w", err)
 	}
-	return resp, nil
+	for _, v := range resp {
+		if v.Name == area.Name {
+			return &Response{
+				ID:   v.ID,
+				Name: v.Name,
+			}, nil
+		}
+	}
+	return nil, nil
 }
 
 // GetLoadTypes retrieves available load types
@@ -229,13 +241,22 @@ func (c *Client) GetPackageTypes(ctx context.Context) ([]Response, error) {
 }
 
 // GetBodyTypes retrieves available body types
-func (c *Client) GetBodyTypes(ctx context.Context) ([]Response, error) {
+func (c *Client) GetBodyTypes(ctx context.Context, body Request) (*Response, error) {
 	var resp []Response
 	err := c.get(ctx, pathTypes, &resp)
 	if err != nil {
 		return nil, fmt.Errorf("get body types failed: %w", err)
 	}
-	return resp, nil
+	for _, v := range resp {
+		if body.Name == v.Name {
+			return &Response{
+				ID:   v.ID,
+				Name: v.Name,
+			}, nil
+		}
+	}
+
+	return nil, nil
 }
 
 // GetPaymentMoments retrieves available payment moments
@@ -249,13 +270,22 @@ func (c *Client) GetPaymentMoments(ctx context.Context) ([]Response, error) {
 }
 
 // GetCurrencies retrieves available currencies
-func (c *Client) GetCurrencies(ctx context.Context) ([]Response, error) {
+func (c *Client) GetCurrencies(ctx context.Context, currency Request) (*Response, error) {
 	var resp []Response
 	err := c.get(ctx, pathCurrencies, &resp)
 	if err != nil {
 		return nil, fmt.Errorf("get currencies failed: %w", err)
 	}
-	return resp, nil
+	for _, v := range resp {
+		if v.Name == currency.Name {
+			return &Response{
+				ID:   v.ID,
+				Name: v.Name,
+			}, nil
+		}
+	}
+
+	return nil, nil
 }
 
 // GetUnits retrieves available units
