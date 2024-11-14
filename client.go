@@ -1,5 +1,5 @@
 // Package larditrans provides a client for interacting with the Lardi-Trans API.
-package larditrans
+package lardiAPI
 
 import (
 	"bytes"
