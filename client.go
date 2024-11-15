@@ -82,45 +82,34 @@ type Response struct {
 
 // CargoRequest represents the request body for creating a cargo proposal
 type CargoRequest struct {
-	ContactID               int          `json:"contactId,omitempty"`
-	PublishDate             int64        `json:"publishDate,omitempty"`
-	DateFrom                string       `json:"dateFrom,omitempty"`
-	DateTo                  string       `json:"dateTo,omitempty"`
-	PaymentValue            float64      `json:"paymentValue,omitempty"`
-	PaymentCurrencyID       int          `json:"paymentCurrencyId,omitempty"`
-	PaymentUnitID           int          `json:"paymentUnitId,omitempty"`
-	PaymentMomentID         int          `json:"paymentMomentId,omitempty"`
-	PaymentPrepay           float64      `json:"paymentPrepay,omitempty"`
-	PaymentDelay            int          `json:"paymentDelay,omitempty"`
-	BodyGroupID             int          `json:"bodyGroupId,omitempty"`
-	CargoBodyTypeIDs        []int        `json:"cargoBodyTypeIds,omitempty"`
-	CargoPackaging          int          `json:"cargoPackaging,omitempty"`
-	PaymentForms            int          `json:"paymentForms,omitempty"`
-	RefrigeratorRegime      bool         `json:"refrigeratorRegime,omitempty"`
-	RefrigeratorRegimeFrom  int          `json:"refrigeratorRegimeFrom,omitempty"`
-	RefrigeratorRegimeTo    int          `json:"refrigeratorRegimeTo,omitempty"`
-	LoadTypes               []int        `json:"loadTypes,omitempty"`
-	Adr                     string       `json:"adr,omitempty"`
-	Cmr                     bool         `json:"cmr,omitempty"`
-	CmrInsurance            bool         `json:"cmrInsurance,omitempty"`
-	Groupage                bool         `json:"groupage,omitempty"`
-	T1                      bool         `json:"t1,omitempty"`
-	Tir                     bool         `json:"tir,omitempty"`
-	LorryAmount             int          `json:"lorryAmount,omitempty"`
-	Note                    string       `json:"note,omitempty"`
-	ContentName             string       `json:"contentName,omitempty"`
-	ContentID               int          `json:"contentId,omitempty"`
-	MedicalRecords          bool         `json:"medicalRecords,omitempty"`
-	CustomsControl          bool         `json:"customsControl,omitempty"`
-	LoadingFrequencyID      int          `json:"loadingFrequencyId,omitempty"`
-	SizeMass                float64      `json:"sizeMass,omitempty"`
-	SizeVolume              float64      `json:"sizeVolume,omitempty"`
-	SizeLength              float64      `json:"sizeLength,omitempty"`
-	SizeWidth               float64      `json:"sizeWidth,omitempty"`
-	SizeHeight              float64      `json:"sizeHeight,omitempty"`
-	WaypointListSource      []LoadParams `json:"waypointListSource"`
-	WaypointListTarget      []LoadParams `json:"waypointListTarget"`
-	CargoBodyTypeProperties []string     `json:"cargoBodyTypeProperties,omitempty"`
+	ContactID          int           `json:"contactId,omitempty"`
+	DateFrom           string        `json:"dateFrom,omitempty"`
+	DateTo             string        `json:"dateTo,omitempty"`
+	PaymentValue       int           `json:"paymentPrice,omitempty"`
+	PaymentCurrencyID  int           `json:"paymentCurrencyId,omitempty"`
+	PaymentUnitID      int           `json:"paymentUnitId,omitempty"`
+	PaymentMomentID    int           `json:"paymentMomentId,omitempty"`
+	CargoBodyTypeIDs   []int         `json:"cargoBodyTypeIds,omitempty"`
+	CargoPackaging     []CargoPack   `json:"cargoPackaging,omitempty"`
+	PaymentForms       []PaymentForm `json:"paymentForms,omitempty"`
+	LorryAmount        int           `json:"lorryAmount,omitempty"`
+	LoadTypes          []int         `json:"loadTypes,omitempty"`
+	Groupage           bool          `json:"groupage,omitempty"`
+	ContentName        string        `json:"contentName,omitempty"`
+	SizeMass           float64       `json:"sizeMass,omitempty"`
+	SizeVolume         float64       `json:"sizeVolume,omitempty"`
+	WaypointListSource []LoadParams  `json:"waypointListSource"`
+	WaypointListTarget []LoadParams  `json:"waypointListTarget"`
+}
+
+type PaymentForm struct {
+	ID  int  `json:"id,omitempty"`
+	Vat bool `json:"vat,omitempty"`
+}
+
+type CargoPack struct {
+	ID    int `json:"id,omitempty"`
+	Count int `json:"count,omitempty"`
 }
 
 // Validate checks if the required fields are set
