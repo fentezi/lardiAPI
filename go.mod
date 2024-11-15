@@ -1,3 +1,3 @@
-module github.com/fentezi/lardiAPI/v2
+module github.com/fentezi/lardiAPI
 
 go 1.23.2
