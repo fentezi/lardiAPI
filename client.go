@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 // API endpoints
@@ -83,23 +85,23 @@ type Response struct {
 // CargoRequest represents the request body for creating a cargo proposal
 type CargoRequest struct {
 	ContactID          int           `json:"contactId,omitempty"`
-	DateFrom           string        `json:"dateFrom,omitempty"`
+	DateFrom           string        `json:"dateFrom,omitempty" validate:"required"`
 	DateTo             string        `json:"dateTo,omitempty"`
-	PaymentValue       int           `json:"paymentPrice,omitempty"`
-	PaymentCurrencyID  int           `json:"paymentCurrencyId,omitempty"`
+	PaymentValue       int           `json:"paymentPrice,omitempty" validate:"required"`
+	PaymentCurrencyID  int           `json:"paymentCurrencyId,omitempty" validate:"required"`
 	PaymentUnitID      int           `json:"paymentUnitId,omitempty"`
 	PaymentMomentID    int           `json:"paymentMomentId,omitempty"`
-	CargoBodyTypeIDs   []int         `json:"cargoBodyTypeIds,omitempty"`
+	CargoBodyTypeIDs   []int         `json:"cargoBodyTypeIds,omitempty" validate:"required"`
 	CargoPackaging     []CargoPack   `json:"cargoPackaging,omitempty"`
 	PaymentForms       []PaymentForm `json:"paymentForms,omitempty"`
 	LorryAmount        int           `json:"lorryAmount,omitempty"`
 	LoadTypes          []int         `json:"loadTypes,omitempty"`
 	Groupage           bool          `json:"groupage,omitempty"`
 	ContentName        string        `json:"contentName,omitempty"`
-	SizeMass           float64       `json:"sizeMass,omitempty"`
+	SizeMass           float64       `json:"sizeMass,omitempty" validate:"required"`
 	SizeVolume         float64       `json:"sizeVolume,omitempty"`
-	WaypointListSource []LoadParams  `json:"waypointListSource"`
-	WaypointListTarget []LoadParams  `json:"waypointListTarget"`
+	WaypointListSource []LoadParams  `json:"waypointListSource" validate:"required"`
+	WaypointListTarget []LoadParams  `json:"waypointListTarget" validate:"required"`
 }
 
 type PaymentForm struct {
@@ -110,17 +112,6 @@ type PaymentForm struct {
 type CargoPack struct {
 	ID    int `json:"id,omitempty"`
 	Count int `json:"count,omitempty"`
-}
-
-// Validate checks if the required fields are set
-func (r *CargoRequest) Validate() error {
-	if len(r.WaypointListSource) == 0 {
-		return fmt.Errorf("waypointListSource is required")
-	}
-	if len(r.WaypointListTarget) == 0 {
-		return fmt.Errorf("waypointListTarget is required")
-	}
-	return nil
 }
 
 // LoadParams represents loading/unloading point parameters
@@ -154,12 +145,15 @@ func (e *APIError) Error() string {
 
 // CreateCargo creates a new cargo proposal
 func (c *Client) CreateCargo(ctx context.Context, req *CargoRequest) (*CargoResponse, error) {
-	if err := req.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid request: %w", err)
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		errors := err.(*validator.ValidationErrors)
+		return nil, errors
 	}
 
 	var resp CargoResponse
-	err := c.post(ctx, pathCargo, req, &resp)
+	err = c.post(ctx, pathCargo, req, &resp)
 	if err != nil {
 		return nil, fmt.Errorf("create cargo request failed: %w", err)
 	}
