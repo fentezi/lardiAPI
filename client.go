@@ -125,15 +125,11 @@ func (r *CargoRequest) Validate() error {
 
 // LoadParams represents loading/unloading point parameters
 type LoadParams struct {
-	TownID      int     `json:"townId"`
-	TownName    string  `json:"townName"`
-	AreaID      int     `json:"areaId"`
-	CountrySign string  `json:"countrySign"`
-	RegionID    int     `json:"regionId"`
-	PostCode    string  `json:"postCode"`
-	Lon         float64 `json:"lon"`
-	Lat         float64 `json:"lat"`
-	Address     string  `json:"address"`
+	TownName    string   `json:"townName"`
+	AreaID      int      `json:"areaId"`
+	CountrySign string   `json:"countrySign"`
+	RegionID    int      `json:"regionId"`
+	PostCodes   []string `json:"postCode"`
 }
 
 type Request struct {
