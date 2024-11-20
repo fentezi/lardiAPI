@@ -87,8 +87,8 @@ type CargoRequest struct {
 	ContactID          int           `json:"contactId,omitempty"`
 	DateFrom           string        `json:"dateFrom,omitempty" validate:"required"`
 	DateTo             string        `json:"dateTo,omitempty"`
-	PaymentValue       int           `json:"paymentPrice,omitempty" validate:"required"`
-	PaymentCurrencyID  int           `json:"paymentCurrencyId,omitempty" validate:"required"`
+	PaymentValue       int           `json:"paymentPrice,omitempty"`
+	PaymentCurrencyID  int           `json:"paymentCurrencyId,omitempty"`
 	PaymentUnitID      int           `json:"paymentUnitId,omitempty"`
 	PaymentMomentID    int           `json:"paymentMomentId,omitempty"`
 	CargoBodyTypeIDs   []int         `json:"cargoBodyTypeIds,omitempty" validate:"required"`
@@ -148,7 +148,7 @@ func (c *Client) CreateCargo(ctx context.Context, req *CargoRequest) (*CargoResp
 	validate := validator.New()
 	err := validate.Struct(req)
 	if err != nil {
-		errors := err.(*validator.ValidationErrors)
+		errors := err.(validator.ValidationErrors)
 		return nil, errors
 	}
 
