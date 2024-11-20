@@ -87,7 +87,7 @@ type CargoRequest struct {
 	ContactID          int           `json:"contactId,omitempty"`
 	DateFrom           string        `json:"dateFrom,omitempty" validate:"required"`
 	DateTo             string        `json:"dateTo,omitempty"`
-	PaymentValue       int           `json:"paymentPrice,omitempty"`
+	PaymentValue       int           `json:"paymentValue,omitempty"`
 	PaymentCurrencyID  int           `json:"paymentCurrencyId,omitempty"`
 	PaymentUnitID      int           `json:"paymentUnitId,omitempty"`
 	PaymentMomentID    int           `json:"paymentMomentId,omitempty"`
