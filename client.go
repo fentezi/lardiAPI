@@ -30,6 +30,7 @@ const (
 	pathLoadTypes    = "/v2/references/load/types"
 	pathAreas        = "/v2/references/areas"
 	pathContacts     = "/v2/users/user/contacts"
+	pathDelete       = "/v2/proposals/my/basket/throw"
 )
 
 // Config contains the configuration for the API client
@@ -127,6 +128,14 @@ type Request struct {
 	Name string
 }
 
+type DeleteRequest struct {
+	ID int
+}
+
+type DeleteCargo struct {
+	DeleteRequest []DeleteRequest `json:"cargoIds"`
+}
+
 // CargoResponse represents the response from creating a cargo proposal
 type CargoResponse struct {
 	ID int `json:"id"`
@@ -159,6 +168,19 @@ func (c *Client) CreateCargo(ctx context.Context, req *CargoRequest) (*CargoResp
 	}
 
 	return &resp, nil
+}
+
+func (c *Client) DeleteCargo(ctx context.Context, req DeleteRequest) error {
+	var deletes DeleteCargo
+
+	deletes.DeleteRequest = append(deletes.DeleteRequest, req)
+
+	err := c.post(ctx, pathDelete, deletes, nil)
+	if err != nil {
+		return fmt.Errorf("delete cargo request failed: %w", err)
+	}
+
+	return nil
 }
 
 // GetContacts retrieves available contacts
