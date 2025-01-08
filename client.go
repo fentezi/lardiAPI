@@ -128,12 +128,12 @@ type Request struct {
 	Name string
 }
 
-type DeleteRequest struct {
-	ID int
+type DeleteResponse struct {
+	Success []int `json:"success"`
 }
 
 type DeleteCargo struct {
-	DeleteRequest []DeleteRequest `json:"cargoIds"`
+	CargoIds []int `json:"cargoIds"`
 }
 
 // CargoResponse represents the response from creating a cargo proposal
@@ -170,17 +170,18 @@ func (c *Client) CreateCargo(ctx context.Context, req *CargoRequest) (*CargoResp
 	return &resp, nil
 }
 
-func (c *Client) DeleteCargo(ctx context.Context, req DeleteRequest) error {
-	var deletes DeleteCargo
-
-	deletes.DeleteRequest = append(deletes.DeleteRequest, req)
-
-	err := c.post(ctx, pathDelete, deletes, nil)
-	if err != nil {
-		return fmt.Errorf("delete cargo request failed: %w", err)
+func (c *Client) DeleteCargo(ctx context.Context, id int) (*DeleteResponse, error) {
+	deletes := DeleteCargo{
+		CargoIds: []int{id},
 	}
 
-	return nil
+	var resp DeleteResponse
+	err := c.post(ctx, pathDelete, deletes, &resp)
+	if err != nil {
+		return nil, fmt.Errorf("delete cargo request failed: %w", err)
+	}
+
+	return &resp, nil
 }
 
 // GetContacts retrieves available contacts
