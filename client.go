@@ -128,12 +128,8 @@ type Request struct {
 	Name string
 }
 
-type DeleteRequest struct {
-	ID int
-}
-
 type DeleteCargo struct {
-	DeleteRequest []DeleteRequest `json:"cargoIds"`
+	CargoIds []int `json:"cargoIds"`
 }
 
 // CargoResponse represents the response from creating a cargo proposal
@@ -170,10 +166,10 @@ func (c *Client) CreateCargo(ctx context.Context, req *CargoRequest) (*CargoResp
 	return &resp, nil
 }
 
-func (c *Client) DeleteCargo(ctx context.Context, req DeleteRequest) error {
-	var deletes DeleteCargo
-
-	deletes.DeleteRequest = append(deletes.DeleteRequest, req)
+func (c *Client) DeleteCargo(ctx context.Context, id int) error {
+	deletes := DeleteCargo{
+		CargoIds: []int{id},
+	}
 
 	err := c.post(ctx, pathDelete, deletes, nil)
 	if err != nil {
