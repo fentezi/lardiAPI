@@ -31,6 +31,7 @@ const (
 	pathAreas        = "/v2/references/areas"
 	pathContacts     = "/v2/users/user/contacts"
 	pathDelete       = "/v2/proposals/my/basket/throw"
+	pathUpdate       = "/v2/proposals/my/cargo/%s/%d"
 )
 
 // Config contains the configuration for the API client
@@ -157,8 +158,11 @@ func (c *Client) CreateCargo(ctx context.Context, req *CargoRequest) (*CargoResp
 	validate := validator.New()
 	err := validate.Struct(req)
 	if err != nil {
-		errors := err.(validator.ValidationErrors)
-		return nil, errors
+		validationErrors, ok := err.(validator.ValidationErrors)
+		if !ok {
+			return nil, fmt.Errorf("unexpected validation error: %w", err)
+		}
+		return nil, validationErrors
 	}
 
 	var resp CargoResponse
@@ -181,6 +185,27 @@ func (c *Client) DeleteCargo(ctx context.Context, id int) (*DeleteResponse, erro
 		return nil, fmt.Errorf("delete cargo request failed: %w", err)
 	}
 
+	return &resp, nil
+}
+
+func (c *Client) UpdateCargo(ctx context.Context, id int, status string, req *CargoRequest) (
+	*CargoResponse, error,
+) {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		validationErrors, ok := err.(validator.ValidationErrors)
+		if !ok {
+			return nil, fmt.Errorf("unexpected validation error: %w", err)
+		}
+		return nil, validationErrors
+	}
+	path := fmt.Sprintf(pathUpdate, status, id)
+	var resp CargoResponse
+	err = c.put(ctx, path, req, &resp)
+	if err != nil {
+		return nil, fmt.Errorf("update cargo request failed: %w", err)
+	}
 	return &resp, nil
 }
 
@@ -301,13 +326,17 @@ func (c *Client) GetUnits(ctx context.Context) ([]Response, error) {
 }
 
 // post performs a POST request
-func (c *Client) post(ctx context.Context, path string, body interface{}, result interface{}) error {
+func (c *Client) post(
+	ctx context.Context, path string, body interface{}, result interface{},
+) error {
 	jsonData, err := json.Marshal(body)
 	if err != nil {
 		return fmt.Errorf("failed to marshal request body: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.config.BaseURL+path, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(
+		ctx, http.MethodPost, c.config.BaseURL+path, bytes.NewBuffer(jsonData),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
@@ -318,6 +347,23 @@ func (c *Client) post(ctx context.Context, path string, body interface{}, result
 // get performs a GET request
 func (c *Client) get(ctx context.Context, path string, result interface{}) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.config.BaseURL+path, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	return c.doRequest(req, result)
+}
+
+// put performs a PUT request
+func (c *Client) put(ctx context.Context, path string, body interface{}, result interface{}) error {
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request body: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(
+		ctx, http.MethodPut, c.config.BaseURL+path, bytes.NewBuffer(jsonData),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
